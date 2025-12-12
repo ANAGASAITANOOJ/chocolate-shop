@@ -446,6 +446,15 @@
       document.getElementById('menuPage').style.display = 'none';
       document.getElementById('adminPage').style.display = 'none';
     }
+    
+    // State management
+    let currentUser = {
+      name: '',
+      email: '',
+      role: '' // 'user' or 'admin'
+    };
+
+    let orders = JSON.parse(localStorage.getItem('chocolateOrders')) || []; // Store all orders
 
     // Show user login form
     function showUserLogin() {
@@ -810,3 +819,4 @@ TOTAL AMOUNT: ₹${order.total}`;
   </script>
 </body>
 </html>
+
