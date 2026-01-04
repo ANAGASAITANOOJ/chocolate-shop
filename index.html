@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homemade Chocolates</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f4c2c2, #d8a7b1);
+      margin: 0;
+      padding: 20px;
+      background-image: url('https://images.unsplash.com/photo-1548907042-7ad26b42260d?ixlib=rb-4.0.3&auto=format&fit=crop&q=80');
+      background-size: cover;
+      min-height: 100vh;
+    }
+    .header {
+      text-align: center;
+      color: #8b4513;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: rgba(255,255,255,0.97);
+      margin: 15px auto;
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 500px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    h2 { color: #8b4513; text-align: center; }
+    .item { margin: 15px 0; padding: 10px; background: #f9e4e4; border-radius: 10px; }
+    .price { font-weight: bold; color: #8b4513; }
+    select, input, textarea { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
+    button {
+      background: #8b4513;
+      color: white;
+      padding: 15px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover { background: #654321; }
+    .logout { background: #ccc; color: #333; }
+    .admin-btn { background: #2c5f2d; }
+    .admin-btn:hover { background: #1e4620; }
+    .hearts { text-align: center; font-size: 30px; margin: 20px 0; }
+    #loginPage, #menuPage, #adminPage { display: none; }
+    .welcome-text { text-align: center; color: #8b4513; margin: 20px 0; font-size: 18px; }
+    .order-card {
+      background: #fff3e0;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 10px;
+      border-left: 4px solid #8b4513;
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .order-status {
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-completed { background: #d4edda; color: #155724; }
+    .order-details { font-size: 14px; line-height: 1.6; }
+    .no-orders { text-align: center; color: #666; padding: 40px; }
+    .role-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .role-btn {
+      flex: 1;
+      padding: 15px;
+      background: #8b4513;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .role-btn:hover { background: #654321; }
+    .complete-btn {
+      background: #2c5f2d;
+      padding: 8px 15px;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .complete-btn:hover { background: #1e4620; }
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: #ddd;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .tab-btn.active {
+      background: #8b4513;
+      color: white;
+    }
+    .stock-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: #f9e4e4;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+    .stock-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .stock-controls button {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      font-size: 20px;
+      border-radius: 50%;
+    }
+    .stock-controls input {
+      width: 80px;
+      text-align: center;
+      margin: 0;
+    }
+    .out-of-stock {
+      background: #ffcccc;
+    }
+    .stock-label {
+      font-weight: bold;
+      color: #8b4513;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- LOGIN PAGE -->
+  <div id="loginPage">
+    <div class="header">
+      <h1>🍫 Homemade Chocolates</h1>
+      <p>Welcome! Please select your role</p>
+    </div>
+    <div class="card">
+      <h2>Login</h2>
+      <div class="role-selector">
+        <button class="role-btn" onclick="showUserLogin()">Customer Login</button>
+        <button class="role-btn" onclick="showAdminLogin()">Admin Login</button>
+      </div>
+      
+      <div id="userLoginForm" style="display:none;">
+        <input type="text" id="loginName" placeholder="Your Name" required>
+        <input type="email" id="loginEmail" placeholder="Email Address" required>
+        <button onclick="login()">Continue to Menu</button>
+      </div>
+
+      <div id="adminLoginForm" style="display:none;">
+        <input type="password" id="adminPassword" placeholder="Admin Password" required>
+        <button class="admin-btn" onclick="adminLogin()">Login as Admin</button>
+      </div>
+
+      <div class="hearts">💗 💗 💗</div>
+    </div>
+  </div>
+
+  <!-- USER MENU PAGE -->
+  <div id="menuPage">
+    <div class="header">
+      <h1>🍫 Homemade Chocolates</h1>
+      <p class="welcome-text">Hello <span id="userName"></span>! Place your order below</p>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+        <img src="https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=150&h=150&fit=crop" alt="Kunafa Chocolate" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover;">
+        <h2 style="margin: 0;">Kunafa Chocolate</h2>
+      </div>
+      <div class="item">1. Big bar <span class="price">₹250</span><br>
+        <select id="kunafa-big"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+      </div>
+      <div class="item">2. Small bar <span class="price">₹150</span><br>
+        <select id="kunafa-small"><option value="0">0</option><option value="1">1</option><option value="2">2</option></select>
+      </div>
+      <div class="item">3. Bytes (each) <span class="price">₹10</span><br>
+        <input type="number" id="kunafa-bytes" min="0" value="0">
+      </div>
+
+      <h2>Dry Fruit Chocolate</h2>
+      <div class="item">1. Big bar ₹150   <select id="dry-big"><option value="0">0</option><option value="1">1</option><option value="2">2</option></select></div>
+      <div class="item">2. Small bar ₹75   <select id="dry-small"><option value="0">0</option><option value="1">1</option><option value="2">2</option></select></div>
+      <div class="item">3. Bytes ₹5 each   <input type="number" id="dry-bytes" min="0" value="0"></div>
+
+      <h2>Oreo Crunchy Chocolate</h2>
+      <div class="item">1. Big bar ₹95   <select id="oreo-big"><option value="0">0</option><option value="1">1</option></select></div>
+      <div class="item">2. Small bar ₹55   <select id="oreo-small"><option value="0">0</option><option value="1">1</option></select></div>
+      <div class="item">3. Bytes ₹5 each   <input type="number" id="oreo-bytes" min="0" value="0"></div>
+
+      <h2>Dark Chocolate</h2>
+      <div class="item">1. Big bar ₹70   <select id="dark-big"><option value="0">0</option><option value="1">1</option></select></div>
+      <div class="item">2. Small bar ₹55   <select id="dark-small"><option value="0">0</option><option value="1">1</option></select></div>
+      <div class="item">3. Bytes ₹5 each   <input type="number" id="dark-bytes" min="0" value="0"></div>
+
+      <h2>Milk Chocolate</h2>
+      <div class="item">1. Big bar ₹80   <select id="milk-big"><option value="0">0</option><option value="1">1</option></select></div>
+      <div class="item">2. Small bar ₹40   <select id="milk-small"><option value="0">0</option><option value="1">1</option></select></div>
+
+      <h2>White Chocolate</h2>
+      <div class="item">1. Big bar ₹80   <select id="white-big"><option value="0">0</option><option value="1">1</option></select></div>
+      <div class="item">2. Small bar ₹40   <select id="white-small"><option value="0">0</option><option value="1">1</option></select></div>
+
+      <hr>
+      <h3>🎀 Name Customization (Optional)</h3>
+      <input type="text" id="customName" placeholder="Write name to print on chocolate (extra ₹50 if any)">
+
+      <h3>📍 Delivery Address</h3>
+      <textarea id="address" rows="3" placeholder="Full address with pincode" required></textarea>
+
+      <h3>💰 Total Amount: ₹<span id="total">0</span></h3>
+
+      <button onclick="placeOrder()">Place Order - Cash on Delivery</button>
+      <button class="logout" onclick="logout()">Logout</button>
+
+      <div class="hearts">💗 💗 💗</div>
+    </div>
+  </div>
+
+  <!-- ADMIN PAGE -->
+  <div id="adminPage">
+    <div class="header">
+      <h1>🍫 Admin Dashboard</h1>
+      <p class="welcome-text">Manage Orders & Stock</p>
+    </div>
+
+    <div class="card">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="showTab('orders')">Orders</button>
+        <button class="tab-btn" onclick="showTab('stock')">Stock Management</button>
+      </div>
+
+      <div id="ordersTab">
+        <h2>All Orders</h2>
+        <div id="ordersList"></div>
+      </div>
+
+      <div id="stockTab" style="display: none;">
+        <h2>Stock Management</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">Manage inventory for each chocolate type</p>
+        
+        <h3 style="color: #8b4513;">Kunafa Chocolate</h3>
+        <div class="stock-item" id="stock-kunafa-big">
+          <span class="stock-label">Big Bar (₹250)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('kunafa-big', -1)">-</button>
+            <input type="number" id="stock-kunafa-big-input" value="10" min="0" onchange="setStock('kunafa-big', this.value)">
+            <button onclick="updateStock('kunafa-big', 1)">+</button>
+          </div>
+        </div>
+        <div class="stock-item" id="stock-kunafa-small">
+          <span class="stock-label">Small Bar (₹150)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('kunafa-small', -1)">-</button>
+            <input type="number" id="stock-kunafa-small-input" value="10" min="0" onchange="setStock('kunafa-small', this.value)">
+            <button onclick="updateStock('kunafa-small', 1)">+</button>
+          </div>
+        </div>
+        <div class="stock-item" id="stock-kunafa-bytes">
+          <span class="stock-label">Bytes (₹10 each)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('kunafa-bytes', -5)">-5</button>
+            <input type="number" id="stock-kunafa-bytes-input" value="50" min="0" onchange="setStock('kunafa-bytes', this.value)">
+            <button onclick="updateStock('kunafa-bytes', 5)">+5</button>
+          </div>
+        </div>
+
+        <h3 style="color: #8b4513;">Dry Fruit Chocolate</h3>
+        <div class="stock-item" id="stock-dry-big">
+          <span class="stock-label">Big Bar (₹150)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('dry-big', -1)">-</button>
+            <input type="number" id="stock-dry-big-input" value="10" min="0" onchange="setStock('dry-big', this.value)">
+            <button onclick="updateStock('dry-big', 1)">+</button>
+          </div>
+        </div>
+        <div class="stock-item" id="stock-dry-small">
+          <span class="stock-label">Small Bar (₹75)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('dry-small', -1)">-</button>
+            <input type="number" id="stock-dry-small-input" value="10" min="0" onchange="setStock('dry-small', this.value)">
+            <button onclick="updateStock('dry-small', 1)">+</button>
+          </div>
+        </div>
+        <div class="stock-item" id="stock-dry-bytes">
+          <span class="stock-label">Bytes (₹5 each)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('dry-bytes', -5)">-5</button>
+            <input type="number" id="stock-dry-bytes-input" value="50" min="0" onchange="setStock('dry-bytes', this.value)">
+            <button onclick="updateStock('dry-bytes', 5)">+5</button>
+          </div>
+        </div>
+
+        <h3 style="color: #8b4513;">Oreo Crunchy Chocolate</h3>
+        <div class="stock-item" id="stock-oreo-big">
+          <span class="stock-label">Big Bar (₹95)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('oreo-big', -1)">-</button>
+            <input type="number" id="stock-oreo-big-input" value="10" min="0" onchange="setStock('oreo-big', this.value)">
+            <button onclick="updateStock('oreo-big', 1)">+</button>
+          </div>
+        </div>
+        <div class="stock-item" id="stock-oreo-small">
+          <span class="stock-label">Small Bar (₹55)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('oreo-small', -1)">-</button>
+            <input type="number" id="stock-oreo-small-input" value="10" min="0" onchange="setStock('oreo-small', this.value)">
+            <button onclick="updateStock('oreo-small', 1)">+</button>
+          </div>
+        </div>
+        <div class="stock-item" id="stock-oreo-bytes">
+          <span class="stock-label">Bytes (₹5 each)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('oreo-bytes', -5)">-5</button>
+            <input type="number" id="stock-oreo-bytes-input" value="50" min="0" onchange="setStock('oreo-bytes', this.value)">
+            <button onclick="updateStock('oreo-bytes', 5)">+5</button>
+          </div>
+        </div>
+
+        <h3 style="color: #8b4513;">Dark Chocolate</h3>
+        <div class="stock-item" id="stock-dark-big">
+          <span class="stock-label">Big Bar (₹70)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('dark-big', -1)">-</button>
+            <input type="number" id="stock-dark-big-input" value="10" min="0" onchange="setStock('dark-big', this.value)">
+            <button onclick="updateStock('dark-big', 1)">+</button>
+          </div>
+        </div>
+        <div class="stock-item" id="stock-dark-small">
+          <span class="stock-label">Small Bar (₹55)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('dark-small', -1)">-</button>
+            <input type="number" id="stock-dark-small-input" value="10" min="0" onchange="setStock('dark-small', this.value)">
+            <button onclick="updateStock('dark-small', 1)">+</button>
+          </div>
+        </div>
+        <div class="stock-item" id="stock-dark-bytes">
+          <span class="stock-label">Bytes (₹5 each)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('dark-bytes', -5)">-5</button>
+            <input type="number" id="stock-dark-bytes-input" value="50" min="0" onchange="setStock('dark-bytes', this.value)">
+            <button onclick="updateStock('dark-bytes', 5)">+5</button>
+          </div>
+        </div>
+
+        <h3 style="color: #8b4513;">Milk Chocolate</h3>
+        <div class="stock-item" id="stock-milk-big">
+          <span class="stock-label">Big Bar (₹80)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('milk-big', -1)">-</button>
+            <input type="number" id="stock-milk-big-input" value="10" min="0" onchange="setStock('milk-big', this.value)">
+            <button onclick="updateStock('milk-big', 1)">+</button>
+          </div>
+        </div>
+        <div class="stock-item" id="stock-milk-small">
+          <span class="stock-label">Small Bar (₹40)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('milk-small', -1)">-</button>
+            <input type="number" id="stock-milk-small-input" value="10" min="0" onchange="setStock('milk-small', this.value)">
+            <button onclick="updateStock('milk-small', 1)">+</button>
+          </div>
+        </div>
+
+        <h3 style="color: #8b4513;">White Chocolate</h3>
+        <div class="stock-item" id="stock-white-big">
+          <span class="stock-label">Big Bar (₹80)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('white-big', -1)">-</button>
+            <input type="number" id="stock-white-big-input" value="10" min="0" onchange="setStock('white-big', this.value)">
+            <button onclick="updateStock('white-big', 1)">+</button>
+          </div>
+        </div>
+        <div class="stock-item" id="stock-white-small">
+          <span class="stock-label">Small Bar (₹40)</span>
+          <div class="stock-controls">
+            <button onclick="updateStock('white-small', -1)">-</button>
+            <input type="number" id="stock-white-small-input" value="10" min="0" onchange="setStock('white-small', this.value)">
+            <button onclick="updateStock('white-small', 1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="logout" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    // State management
+    let currentUser = {
+      name: '',
+      email: '',
+      role: '' // 'user' or 'admin'
+    };
+
+    let orders = []; // Store all orders
+    
+    // Stock inventory
+    let stock = {
+      'kunafa-big': 10,
+      'kunafa-small': 10,
+      'kunafa-bytes': 50,
+      'dry-big': 10,
+      'dry-small': 10,
+      'dry-bytes': 50,
+      'oreo-big': 10,
+      'oreo-small': 10,
+      'oreo-bytes': 50,
+      'dark-big': 10,
+      'dark-small': 10,
+      'dark-bytes': 50,
+      'milk-big': 10,
+      'milk-small': 10,
+      'white-big': 10,
+      'white-small': 10
+    };
+
+    const ADMIN_PASSWORD = 'sahithi'; // Change this to your desired password
+
+    // Initialize - show login page
+    function init() {
+      document.getElementById('loginPage').style.display = 'block';
+      document.getElementById('menuPage').style.display = 'none';
+      document.getElementById('adminPage').style.display = 'none';
+    }
+
+    // Show user login form
+    function showUserLogin() {
+      document.getElementById('userLoginForm').style.display = 'block';
+      document.getElementById('adminLoginForm').style.display = 'none';
+    }
+
+    // Show admin login form
+    function showAdminLogin() {
+      document.getElementById('userLoginForm').style.display = 'none';
+      document.getElementById('adminLoginForm').style.display = 'block';
+    }
+
+    // User login
+    function login() {
+      const name = document.getElementById('loginName').value.trim();
+      const email = document.getElementById('loginEmail').value.trim();
+      
+      if (!name || !email) {
+        alert('Please enter both name and email address');
+        return;
+      }
+
+      // Basic email validation
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        alert('Please enter a valid email address');
+        return;
+      }
+
+      currentUser.name = name;
+      currentUser.email = email;
+      currentUser.role = 'user';
+
+      document.getElementById('userName').innerText = name;
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('menuPage').style.display = 'block';
+    }
+
+    // Admin login
+    function adminLogin() {
+      const password = document.getElementById('adminPassword').value;
+      
+      if (password === ADMIN_PASSWORD) {
+        currentUser.role = 'admin';
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('adminPage').style.display = 'block';
+        loadStockValues();
+        displayOrders();
+      } else {
+        alert('Incorrect password!');
+        document.getElementById('adminPassword').value = '';
+      }
+    }
+
+    // Show/hide admin tabs
+    function showTab(tab) {
+      const orderTab = document.getElementById('ordersTab');
+      const stockTab = document.getElementById('stockTab');
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      
+      if (tab === 'orders') {
+        orderTab.style.display = 'block';
+        stockTab.style.display = 'none';
+        tabButtons[0].classList.add('active');
+        tabButtons[1].classList.remove('active');
+        displayOrders();
+      } else {
+        orderTab.style.display = 'none';
+        stockTab.style.display = 'block';
+        tabButtons[0].classList.remove('active');
+        tabButtons[1].classList.add('active');
+        loadStockValues();
+      }
+    }
+
+    // Load stock values into inputs
+    function loadStockValues() {
+      for (let key in stock) {
+        const input = document.getElementById(`stock-${key}-input`);
+        if (input) {
+          input.value = stock[key];
+          updateStockDisplay(key);
+        }
+      }
+    }
+
+    // Update stock
+    function updateStock(item, change) {
+      stock[item] = Math.max(0, stock[item] + change);
+      document.getElementById(`stock-${item}-input`).value = stock[item];
+      updateStockDisplay(item);
+    }
+
+    // Set stock directly
+    function setStock(item, value) {
+      stock[item] = Math.max(0, parseInt(value) || 0);
+      updateStockDisplay(item);
+    }
+
+    // Update stock display (highlight if out of stock)
+    function updateStockDisplay(item) {
+      const stockItem = document.getElementById(`stock-${item}`);
+      if (stock[item] === 0) {
+        stockItem.classList.add('out-of-stock');
+      } else {
+        stockItem.classList.remove('out-of-stock');
+      }
+    }
+
+    // Calculate total
+    function calculateTotal() {
+      let total = 0;
+      total += (parseInt(document.getElementById('kunafa-big').value) * 250);
+      total += (parseInt(document.getElementById('kunafa-small').value) * 150);
+      total += (parseInt(document.getElementById('kunafa-bytes').value || 0) * 10);
+
+      total += (parseInt(document.getElementById('dry-big').value) * 150);
+      total += (parseInt(document.getElementById('dry-small').value) * 75);
+      total += (parseInt(document.getElementById('dry-bytes').value || 0) * 5);
+
+      total += (parseInt(document.getElementById('oreo-big').value) * 95);
+      total += (parseInt(document.getElementById('oreo-small').value) * 55);
+      total += (parseInt(document.getElementById('oreo-bytes').value || 0) * 5);
+
+      total += (parseInt(document.getElementById('dark-big').value) * 70);
+      total += (parseInt(document.getElementById('dark-small').value) * 55);
+      total += (parseInt(document.getElementById('dark-bytes').value || 0) * 5);
+
+      total += (parseInt(document.getElementById('milk-big').value) * 80);
+      total += (parseInt(document.getElementById('milk-small').value) * 40);
+
+      total += (parseInt(document.getElementById('white-big').value) * 80);
+      total += (parseInt(document.getElementById('white-small').value) * 40);
+
+      if (document.getElementById('customName').value.trim()) total += 50;
+
+      document.getElementById('total').innerText = total;
+    }
+
+    // Place order
+    function placeOrder() {
+      if (document.getElementById('address').value.trim() === '') {
+        alert('Please enter delivery address');
+        return;
+      }
+      if (document.getElementById('total').innerText == '0') {
+        alert('Please select at least one item');
+        return;
+      }
+
+      // Check stock availability
+      const orderItems = {
+        'kunafa-big': parseInt(document.getElementById('kunafa-big').value),
+        'kunafa-small': parseInt(document.getElementById('kunafa-small').value),
+        'kunafa-bytes': parseInt(document.getElementById('kunafa-bytes').value || 0),
+        'dry-big': parseInt(document.getElementById('dry-big').value),
+        'dry-small': parseInt(document.getElementById('dry-small').value),
+        'dry-bytes': parseInt(document.getElementById('dry-bytes').value || 0),
+        'oreo-big': parseInt(document.getElementById('oreo-big').value),
+        'oreo-small': parseInt(document.getElementById('oreo-small').value),
+        'oreo-bytes': parseInt(document.getElementById('oreo-bytes').value || 0),
+        'dark-big': parseInt(document.getElementById('dark-big').value),
+        'dark-small': parseInt(document.getElementById('dark-small').value),
+        'dark-bytes': parseInt(document.getElementById('dark-bytes').value || 0),
+        'milk-big': parseInt(document.getElementById('milk-big').value),
+        'milk-small': parseInt(document.getElementById('milk-small').value),
+        'white-big': parseInt(document.getElementById('white-big').value),
+        'white-small': parseInt(document.getElementById('white-small').value)
+      };
+
+      // Check if any item exceeds stock
+      for (let item in orderItems) {
+        if (orderItems[item] > stock[item]) {
+          alert(`Sorry! ${item.replace('-', ' ')} is out of stock or insufficient quantity available.\nAvailable: ${stock[item]}`);
+          return;
+        }
+      }
+
+      // Deduct stock
+      for (let item in orderItems) {
+        if (orderItems[item] > 0) {
+          stock[item] -= orderItems[item];
+        }
+      }
+
+      // Create order object
+      const order = {
+        id: Date.now(),
+        timestamp: new Date().toLocaleString(),
+        status: 'pending',
+        customer: {
+          name: currentUser.name,
+          email: currentUser.email,
+          address: document.getElementById('address').value
+        },
+        customization: document.getElementById('customName').value || 'None',
+        items: {
+          kunafa: {
+            big: document.getElementById('kunafa-big').value,
+            small: document.getElementById('kunafa-small').value,
+            bytes: document.getElementById('kunafa-bytes').value || 0
+          },
+          dryFruit: {
+            big: document.getElementById('dry-big').value,
+            small: document.getElementById('dry-small').value,
+            bytes: document.getElementById('dry-bytes').value || 0
+          },
+          oreo: {
+            big: document.getElementById('oreo-big').value,
+            small: document.getElementById('oreo-small').value,
+            bytes: document.getElementById('oreo-bytes').value || 0
+          },
+          dark: {
+            big: document.getElementById('dark-big').value,
+            small: document.getElementById('dark-small').value,
+            bytes: document.getElementById('dark-bytes').value || 0
+          },
+          milk: {
+            big: document.getElementById('milk-big').value,
+            small: document.getElementById('milk-small').value
+          },
+          white: {
+            big: document.getElementById('white-big').value,
+            small: document.getElementById('white-small').value
+          }
+        },
+        total: document.getElementById('total').innerText
+      };
+
+      // Add order to orders array
+      orders.push(order);
+
+      // Create email body
+      const orderDetails = `NEW ORDER - Cash on Delivery
+Order ID: ${order.id}
+Date: ${order.timestamp}
+
+Customer Details:
+Name: ${order.customer.name}
+Email: ${order.customer.email}
+Address: ${order.customer.address}
+
+Name on Chocolate: ${order.customization}
+
+ORDER SUMMARY:
+
+Kunafa Chocolate:
+- Big bar: ${order.items.kunafa.big}
+- Small bar: ${order.items.kunafa.small}
+- Bytes: ${order.items.kunafa.bytes}
+
+Dry Fruit Chocolate:
+- Big bar: ${order.items.dryFruit.big}
+- Small bar: ${order.items.dryFruit.small}
+- Bytes: ${order.items.dryFruit.bytes}
+
+Oreo Crunchy Chocolate:
+- Big bar: ${order.items.oreo.big}
+- Small bar: ${order.items.oreo.small}
+- Bytes: ${order.items.oreo.bytes}
+
+Dark Chocolate:
+- Big bar: ${order.items.dark.big}
+- Small bar: ${order.items.dark.small}
+- Bytes: ${order.items.dark.bytes}
+
+Milk Chocolate:
+- Big bar: ${order.items.milk.big}
+- Small bar: ${order.items.milk.small}
+
+White Chocolate:
+- Big bar: ${order.items.white.big}
+- Small bar: ${order.items.white.small}
+
+TOTAL AMOUNT: ₹${order.total}`;
+
+      // Open Gmail with pre-filled content
+      const adminEmail = 'akulatanooj@gmail.com'; // CHANGE THIS TO YOUR ADMIN EMAIL
+      const subject = encodeURIComponent(`New Chocolate Order #${order.id} from ${order.customer.name}`);
+      const body = encodeURIComponent(orderDetails);
+      
+      // Use mailto which works universally on all devices
+      const mailtoURL = `mailto:${adminEmail}?subject=${subject}&body=${body}`;
+      
+      // Create a temporary link and click it
+      const link = document.createElement('a');
+      link.href = mailtoURL;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      alert('✅ Order placed successfully!\n\nYour email app (Gmail) will open with order details.\nPlease click SEND to complete your order.\n\nOrder ID: ' + order.id);
+      
+      // Reset form
+      resetOrderForm();
+    }
+
+    // Reset order form
+    function resetOrderForm() {
+      document.querySelectorAll('select').forEach(el => el.value = '0');
+      document.querySelectorAll('input[type="number"]').forEach(el => el.value = '0');
+      document.getElementById('customName').value = '';
+      document.getElementById('address').value = '';
+      calculateTotal();
+    }
+
+    // Display orders in admin panel
+    function displayOrders() {
+      const ordersList = document.getElementById('ordersList');
+      
+      if (orders.length === 0) {
+        ordersList.innerHTML = '<div class="no-orders">No orders yet</div>';
+        return;
+      }
+
+      // Separate pending and completed orders
+      const pendingOrders = orders.filter(order => order.status === 'pending');
+      const completedOrders = orders.filter(order => order.status === 'completed');
+
+      let html = '';
+
+      // Show pending orders first
+      if (pendingOrders.length > 0) {
+        html += '<h3 style="color: #856404; margin-top: 20px;">📋 Pending Orders</h3>';
+        html += pendingOrders.map(order => `
+          <div class="order-card">
+            <div class="order-header">
+              <div>
+                <strong>Order #${order.id}</strong><br>
+                <small>${order.timestamp}</small>
+              </div>
+              <span class="order-status status-${order.status}">
+                ${order.status.toUpperCase()}
+              </span>
+            </div>
+            <div class="order-details">
+              <strong>Customer:</strong> ${order.customer.name}<br>
+              <strong>Email:</strong> ${order.customer.email}<br>
+              <strong>Address:</strong> ${order.customer.address}<br>
+              <strong>Customization:</strong> ${order.customization}<br>
+              <strong>Total:</strong> ₹${order.total}
+              <button class="complete-btn" onclick="markComplete(${order.id})">Mark as Completed</button>
+            </div>
+          </div>
+        `).reverse().join('');
+      }
+
+      // Show completed orders
+      if (completedOrders.length > 0) {
+        html += '<h3 style="color: #155724; margin-top: 20px;">✅ Completed Orders</h3>';
+        html += completedOrders.map(order => `
+          <div class="order-card" style="opacity: 0.7;">
+            <div class="order-header">
+              <div>
+                <strong>Order #${order.id}</strong><br>
+                <small>${order.timestamp}</small>
+              </div>
+              <span class="order-status status-${order.status}">
+                ${order.status.toUpperCase()}
+              </span>
+            </div>
+            <div class="order-details">
+              <strong>Customer:</strong> ${order.customer.name}<br>
+              <strong>Email:</strong> ${order.customer.email}<br>
+              <strong>Address:</strong> ${order.customer.address}<br>
+              <strong>Customization:</strong> ${order.customization}<br>
+              <strong>Total:</strong> ₹${order.total}
+            </div>
+          </div>
+        `).reverse().join('');
+      }
+
+      ordersList.innerHTML = html;
+    }
+
+    // Mark order as complete
+    function markComplete(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = 'completed';
+        displayOrders();
+        alert('Order marked as completed!');
+      }
+    }
+
+    // Logout
+    function logout() {
+      currentUser = { name: '', email: '', role: '' };
+      document.getElementById('loginName').value = '';
+      document.getElementById('loginEmail').value = '';
+      document.getElementById('adminPassword').value = '';
+      init();
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      init();
+      document.querySelectorAll('select, input').forEach(el => {
+        el.addEventListener('input', calculateTotal);
+      });
+    });
+  </script>
+</body>
+</html>
